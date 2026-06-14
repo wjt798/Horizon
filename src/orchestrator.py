@@ -1,4 +1,4 @@
-"""Main orchestrator coordinating the entire workflow."""
+﻿﻿"""Main orchestrator coordinating the entire workflow."""
 
 import asyncio
 from collections import defaultdict
@@ -140,7 +140,7 @@ class HorizonOrchestrator:
                 key = f"{item.source_type.value}/{self._sub_source_label(item)}"
                 selected_counts[key] += 1
             for source_key, count in sorted(selected_counts.items()):
-                self.console.print(f"      鈥?{source_key}: {count}")
+                self.console.print(f"      →{source_key}: {count}")
             self.console.print("")
 
             # 6. Search related stories + enrich with background knowledge (2nd AI pass)
@@ -221,7 +221,7 @@ class HorizonOrchestrator:
                     if u.total <= 0:
                         continue
                     self.console.print(
-                        f"   鈥?{provider}: {u.total} tokens "
+                        f"   →{provider}: {u.total} tokens "
                         f"(in: {u.input_tokens}, out: {u.output_tokens})"
                     )
 
@@ -337,7 +337,7 @@ class HorizonOrchestrator:
             sub_counts[self._sub_source_label(item)] += 1
         if len(sub_counts) > 1:
             for sub, count in sorted(sub_counts.items()):
-                self.console.print(f"      鈥?{sub}: {count}")
+                self.console.print(f"      →{sub}: {count}")
 
         return items
 
@@ -436,8 +436,8 @@ class HorizonOrchestrator:
         # Build the item list for the prompt
         lines = []
         for i, item in enumerate(items):
-            tags = ", ".join(item.ai_tags) if item.ai_tags else "鈥?
-            summary = item.ai_summary or "鈥?
+            tags = ", ".join(item.ai_tags) if item.ai_tags else "—"
+            summary = item.ai_summary or "—"
             lines.append(f"[{i}] {item.title}\n    Tags: {tags}\n    Summary: {summary}")
         items_text = "\n\n".join(lines)
 
@@ -573,7 +573,7 @@ class HorizonOrchestrator:
             for group_key, group in groups.items():
                 label = group.name or group_key
                 self.console.print(
-                    f"      鈥?{label}: {final_counts.get(group_key, 0)}/{group.limit}"
+                    f"      →{label}: {final_counts.get(group_key, 0)}/{group.limit}"
                 )
             if (
                 final_counts.get(default_group, 0)
@@ -585,7 +585,7 @@ class HorizonOrchestrator:
                     else "unlimited"
                 )
                 self.console.print(
-                    f"      鈥?{default_group}: "
+                    f"      →{default_group}: "
                     f"{final_counts.get(default_group, 0)}/{limit_label}"
                 )
             self.console.print("")

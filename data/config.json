@@ -1,0 +1,232 @@
+﻿{
+  "version": "1.0",
+  "ai": {
+    "provider": "deepseek",
+    "model": "deepseek-chat",
+    "api_key_env": "DEEPSEEK_API_KEY",
+    "temperature": 0.3,
+    "max_tokens": 4096,
+    "throttle_sec": 0,
+    "analysis_concurrency": 2,
+    "enrichment_concurrency": 1
+  },
+  "email": {
+    "enabled": false,
+    "smtp_server": "smtp.qq.com",
+    "smtp_port": 465,
+    "imap_server": "imap.qq.com",
+    "imap_port": 993,
+    "email_address": "",
+    "sender_name": "Horizon Daily",
+    "subscribe_keyword": "SUBSCRIBE",
+    "unsubscribe_keyword": "UNSUBSCRIBE"
+  },
+  "sources": {
+    "hackernews": {
+      "enabled": true,
+      "fetch_top_stories": 30,
+      "min_score": 50
+    },
+    "github": [
+      {
+        "type": "user_events",
+        "username": "karpathy",
+        "enabled": true
+      },
+      {
+        "type": "user_events",
+        "username": "ggerganov",
+        "enabled": true
+      },
+      {
+        "type": "user_events",
+        "username": "n8n-io",
+        "enabled": true
+      },
+      {
+        "type": "repo_releases",
+        "owner": "openai",
+        "repo": "openai-cookbook",
+        "enabled": true
+      },
+      {
+        "type": "repo_releases",
+        "owner": "langgenius",
+        "repo": "dify",
+        "enabled": true
+      },
+      {
+        "type": "repo_releases",
+        "owner": "n8n-io",
+        "repo": "n8n",
+        "enabled": true
+      },
+      {
+        "type": "repo_releases",
+        "owner": "mendableai",
+        "repo": "firecrawl",
+        "enabled": true
+      },
+      {
+        "type": "repo_releases",
+        "owner": "Significant-Gravitas",
+        "repo": "AutoGPT",
+        "enabled": true
+      },
+      {
+        "type": "repo_releases",
+        "owner": "infiniflow",
+        "repo": "ragflow",
+        "enabled": true
+      },
+      {
+        "type": "repo_releases",
+        "owner": "Mintplex-Labs",
+        "repo": "anything-llm",
+        "enabled": true
+      },
+      {
+        "type": "repo_releases",
+        "owner": "browser-use",
+        "repo": "browser-use",
+        "enabled": true
+      }
+    ],
+    "reddit": {
+      "enabled": true,
+      "subreddits": [
+        {
+          "subreddit": "ArtificialIntelligence",
+          "enabled": true,
+          "sort": "hot",
+          "time_filter": "day",
+          "fetch_limit": 20,
+          "min_score": 30
+        },
+        {
+          "subreddit": "LocalLLaMA",
+          "enabled": true,
+          "sort": "hot",
+          "time_filter": "day",
+          "fetch_limit": 20,
+          "min_score": 30
+        },
+        {
+          "subreddit": "SaaS",
+          "enabled": true,
+          "sort": "hot",
+          "time_filter": "day",
+          "fetch_limit": 15,
+          "min_score": 20
+        },
+        {
+          "subreddit": "Entrepreneur",
+          "enabled": true,
+          "sort": "hot",
+          "time_filter": "day",
+          "fetch_limit": 15,
+          "min_score": 30
+        },
+        {
+          "subreddit": "opensource",
+          "enabled": true,
+          "sort": "hot",
+          "time_filter": "day",
+          "fetch_limit": 15,
+          "min_score": 50
+        },
+        {
+          "subreddit": "selfhosted",
+          "enabled": true,
+          "sort": "hot",
+          "time_filter": "day",
+          "fetch_limit": 15,
+          "min_score": 30
+        },
+        {
+          "subreddit": "indiebiz",
+          "enabled": true,
+          "sort": "hot",
+          "time_filter": "day",
+          "fetch_limit": 15,
+          "min_score": 20
+        }
+      ],
+      "users": [],
+      "fetch_comments": 5
+    },
+    "rss": [
+      {
+        "name": "Simon Willison",
+        "url": "https://simonwillison.net/atom/everything/",
+        "enabled": true,
+        "category": "ai-tools"
+      },
+      {
+        "name": "量子位",
+        "url": "https://wechat2rss.xlab.app/feed/7131b577c61365cb47e81000738c10d872685908.xml",
+        "enabled": true,
+        "category": "ai-news"
+      },
+      {
+        "name": "新智元",
+        "url": "https://wechat2rss.xlab.app/feed/ede30346413ea70dbef5d485ea5cbb95cca446e7.xml",
+        "enabled": true,
+        "category": "ai-news"
+      },
+      {
+        "name": "GitHub Trending",
+        "url": "https://mshibanami.github.io/GitHubTrendingRSS/daily/all.xml",
+        "enabled": true,
+        "category": "github-trending"
+      },
+      {
+        "name": "Hacker News RSS",
+        "url": "https://hnrss.org/frontpage?count=30",
+        "enabled": true,
+        "category": "tech-news"
+      },
+      {
+        "name": "TechCrunch",
+        "url": "https://techcrunch.com/feed/",
+        "enabled": true,
+        "category": "startup-news"
+      },
+      {
+        "name": "Indie Hackers",
+        "url": "https://www.indiehackers.com/rss.xml",
+        "enabled": true,
+        "category": "indie-maker"
+      }
+    ],
+    "openbb": {
+      "enabled": false,
+      "fetch_filings": false,
+      "filings_provider": "sec",
+      "watchlists": []
+    },
+    "ossinsight": {
+      "enabled": true,
+      "period": "past_24_hours",
+      "languages": ["All", "Python", "TypeScript"],
+      "keywords": ["AI", "agent", "LLM", "open source"],
+      "min_stars": 50,
+      "max_items": 20
+    }
+  },
+  "filtering": {
+    "ai_score_threshold": 6.0,
+    "time_window_hours": 24,
+    "max_items": 20,
+    "category_groups": {
+      "ai-agent": ["ai-tools", "ai-news"],
+      "open-source": ["github-trending"],
+      "indie-business": ["indie-maker", "startup-news"]
+    },
+    "default_group": "other",
+    "default_group_limit": 10
+  },
+  "webhook": {
+    "enabled": false
+  }
+}

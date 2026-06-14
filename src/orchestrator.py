@@ -1,4 +1,4 @@
-﻿﻿"""Main orchestrator coordinating the entire workflow."""
+"""Main orchestrator coordinating the entire workflow."""
 
 import asyncio
 from collections import defaultdict

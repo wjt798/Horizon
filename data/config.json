@@ -1,4 +1,4 @@
-{
+﻿{
   "version": "1.0",
   "ai": {
     "provider": "deepseek",
@@ -219,9 +219,21 @@
     "time_window_hours": 24,
     "max_items": 20,
     "category_groups": {
-      "ai-agent": ["ai-tools", "ai-news"],
-      "open-source": ["github-trending"],
-      "indie-business": ["indie-maker", "startup-news"]
+      "ai-agent": {
+        "name": "AI Agent",
+        "limit": 10,
+        "categories": ["ai-tools", "ai-news"]
+      },
+      "open-source": {
+        "name": "开源动态",
+        "limit": 10,
+        "categories": ["github-trending"]
+      },
+      "indie-business": {
+        "name": "独立开发",
+        "limit": 10,
+        "categories": ["indie-maker", "startup-news"]
+      }
     },
     "default_group": "other",
     "default_group_limit": 10

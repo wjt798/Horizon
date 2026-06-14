@@ -19,7 +19,10 @@ from .scrapers.rss import RSSScraper
 from .scrapers.reddit import RedditScraper
 from .scrapers.telegram import TelegramScraper
 from .scrapers.twitter import TwitterScraper
-from .scrapers.twitter_playwright import TwitterPlaywrightScraper
+try:
+    from .scrapers.twitter_playwright import TwitterPlaywrightScraper
+except ImportError:
+    TwitterPlaywrightScraper = None
 from .scrapers.openbb import OpenBBScraper
 from .scrapers.ossinsight import OSSInsightScraper
 from .ai.client import create_ai_client
@@ -66,7 +69,7 @@ class HorizonOrchestrator:
         Args:
             force_hours: Optional override for time window in hours
         """
-        self.console.print("[bold cyan]🌅 Horizon - Starting aggregation...[/bold cyan]\n")
+        self.console.print("[bold cyan]馃寘 Horizon - Starting aggregation...[/bold cyan]\n")
 
         # Check email subscriptions if configured
         if (
@@ -75,17 +78,17 @@ class HorizonOrchestrator:
             and self.config.email.enabled
             and self.config.email.imap_enabled
         ):
-            self.console.print("📧 Checking for new email subscriptions...")
+            self.console.print("馃摟 Checking for new email subscriptions...")
             self.email_manager.check_subscriptions(self.storage)
 
         try:
             # 1. Determine time window
             since = self._determine_time_window(force_hours)
-            self.console.print(f"📅 Fetching content since: {since.strftime('%Y-%m-%d %H:%M:%S')}\n")
+            self.console.print(f"馃搮 Fetching content since: {since.strftime('%Y-%m-%d %H:%M:%S')}\n")
 
             # 2. Fetch content from all sources
             all_items = await self.fetch_all_sources(since)
-            self.console.print(f"📥 Fetched {len(all_items)} items from all sources\n")
+            self.console.print(f"馃摜 Fetched {len(all_items)} items from all sources\n")
 
             if not all_items:
                 self.console.print("[yellow]No new content found. Exiting.[/yellow]")
@@ -95,13 +98,13 @@ class HorizonOrchestrator:
             merged_items = self.merge_cross_source_duplicates(all_items)
             if len(merged_items) < len(all_items):
                 self.console.print(
-                    f"🔗 Merged {len(all_items) - len(merged_items)} cross-source duplicates "
-                    f"→ {len(merged_items)} unique items\n"
+                    f"馃敆 Merged {len(all_items) - len(merged_items)} cross-source duplicates "
+                    f"鈫?{len(merged_items)} unique items\n"
                 )
 
             # 4. Analyze with AI
             analyzed_items = await self._analyze_content(merged_items)
-            self.console.print(f"🤖 Analyzed {len(analyzed_items)} items with AI\n")
+            self.console.print(f"馃 Analyzed {len(analyzed_items)} items with AI\n")
 
             # 5. Filter by score threshold
             threshold = self.config.filtering.ai_score_threshold
@@ -112,15 +115,15 @@ class HorizonOrchestrator:
             important_items.sort(key=lambda x: x.ai_score or 0, reverse=True)
 
             self.console.print(
-                f"⭐️ {len(important_items)} items scored ≥ {threshold}\n"
+                f"猸愶笍 {len(important_items)} items scored 鈮?{threshold}\n"
             )
 
             # 5.5 Semantic deduplication: drop items covering the same topic
             deduped_items = await self.merge_topic_duplicates(important_items)
             if len(deduped_items) < len(important_items):
                 self.console.print(
-                    f"🧹 Removed {len(important_items) - len(deduped_items)} topic duplicates "
-                    f"→ {len(deduped_items)} unique items\n"
+                    f"馃Ч Removed {len(important_items) - len(deduped_items)} topic duplicates "
+                    f"鈫?{len(deduped_items)} unique items\n"
                 )
             important_items = deduped_items
 
@@ -137,7 +140,7 @@ class HorizonOrchestrator:
                 key = f"{item.source_type.value}/{self._sub_source_label(item)}"
                 selected_counts[key] += 1
             for source_key, count in sorted(selected_counts.items()):
-                self.console.print(f"      • {source_key}: {count}")
+                self.console.print(f"      鈥?{source_key}: {count}")
             self.console.print("")
 
             # 6. Search related stories + enrich with background knowledge (2nd AI pass)
@@ -151,7 +154,7 @@ class HorizonOrchestrator:
 
                 # Save to data/summaries/
                 summary_path = self.storage.save_daily_summary(today, summary, language=lang)
-                self.console.print(f"💾 Saved {lang.upper()} summary to: {summary_path}\n")
+                self.console.print(f"馃捑 Saved {lang.upper()} summary to: {summary_path}\n")
 
                 # Copy to docs/ for GitHub Pages
                 try:
@@ -184,13 +187,13 @@ class HorizonOrchestrator:
                     with open(dest_path, "w", encoding="utf-8") as f:
                         f.write(front_matter + summary_content)
 
-                    self.console.print(f"📄 Copied {lang.upper()} summary to GitHub Pages: {dest_path}\n")
+                    self.console.print(f"馃搫 Copied {lang.upper()} summary to GitHub Pages: {dest_path}\n")
                 except Exception as e:
-                    self.console.print(f"[yellow]⚠️  Failed to copy {lang.upper()} summary to docs/: {e}[/yellow]\n")
+                    self.console.print(f"[yellow]鈿狅笍  Failed to copy {lang.upper()} summary to docs/: {e}[/yellow]\n")
 
                 # Send email if configured
                 if self.email_manager and self.config.email and self.config.email.enabled:
-                    self.console.print(f"📧 Sending {lang.upper()} email summary...")
+                    self.console.print(f"馃摟 Sending {lang.upper()} email summary...")
                     subscribers = self.storage.load_subscribers()
                     subject = f"Horizon Summary ({lang.upper()}) - {today}"
                     self.email_manager.send_daily_summary(summary, subject, subscribers)
@@ -206,11 +209,11 @@ class HorizonOrchestrator:
                         summarizer=summarizer,
                     )
 
-            self.console.print("[bold green]✅ Horizon completed successfully![/bold green]")
+            self.console.print("[bold green]鉁?Horizon completed successfully![/bold green]")
             usage = get_usage_snapshot()
             if usage.total_tokens > 0:
                 self.console.print(
-                    f"\n🧮 Token usage this run: "
+                    f"\n馃М Token usage this run: "
                     f"{usage.total_tokens} tokens "
                     f"(input: {usage.total_input_tokens}, output: {usage.total_output_tokens})"
                 )
@@ -218,12 +221,12 @@ class HorizonOrchestrator:
                     if u.total <= 0:
                         continue
                     self.console.print(
-                        f"   • {provider}: {u.total} tokens "
+                        f"   鈥?{provider}: {u.total} tokens "
                         f"(in: {u.input_tokens}, out: {u.output_tokens})"
                     )
 
         except Exception as e:
-            self.console.print(f"[bold red]❌ Error: {e}[/bold red]")
+            self.console.print(f"[bold red]鉂?Error: {e}[/bold red]")
 
             # Send webhook failure notification if configured
             if self.webhook_notifier:
@@ -324,7 +327,7 @@ class HorizonOrchestrator:
         Returns:
             List[ContentItem]: Fetched items
         """
-        self.console.print(f"🔍 Fetching from {name}...")
+        self.console.print(f"馃攳 Fetching from {name}...")
         items = await scraper.fetch(since)
         self.console.print(f"   Found {len(items)} items from {name}")
 
@@ -334,7 +337,7 @@ class HorizonOrchestrator:
             sub_counts[self._sub_source_label(item)] += 1
         if len(sub_counts) > 1:
             for sub, count in sorted(sub_counts.items()):
-                self.console.print(f"      • {sub}: {count}")
+                self.console.print(f"      鈥?{sub}: {count}")
 
         return items
 
@@ -433,8 +436,8 @@ class HorizonOrchestrator:
         # Build the item list for the prompt
         lines = []
         for i, item in enumerate(items):
-            tags = ", ".join(item.ai_tags) if item.ai_tags else "—"
-            summary = item.ai_summary or "—"
+            tags = ", ".join(item.ai_tags) if item.ai_tags else "鈥?
+            summary = item.ai_summary or "鈥?
             lines.append(f"[{i}] {item.title}\n    Tags: {tags}\n    Summary: {summary}")
         items_text = "\n\n".join(lines)
 
@@ -565,12 +568,12 @@ class HorizonOrchestrator:
 
         if log:
             self.console.print(
-                f"⚖️ Balanced digest selected {len(selected)}/{len(items)} items"
+                f"鈿栵笍 Balanced digest selected {len(selected)}/{len(items)} items"
             )
             for group_key, group in groups.items():
                 label = group.name or group_key
                 self.console.print(
-                    f"      • {label}: {final_counts.get(group_key, 0)}/{group.limit}"
+                    f"      鈥?{label}: {final_counts.get(group_key, 0)}/{group.limit}"
                 )
             if (
                 final_counts.get(default_group, 0)
@@ -582,7 +585,7 @@ class HorizonOrchestrator:
                     else "unlimited"
                 )
                 self.console.print(
-                    f"      • {default_group}: "
+                    f"      鈥?{default_group}: "
                     f"{final_counts.get(default_group, 0)}/{limit_label}"
                 )
             self.console.print("")
@@ -616,7 +619,7 @@ class HorizonOrchestrator:
             return
 
         self.console.print(
-            f"💬 Fetching reply text for {len(twitter_items)} Twitter items..."
+            f"馃挰 Fetching reply text for {len(twitter_items)} Twitter items..."
         )
 
         async with httpx.AsyncClient(timeout=30.0) as client:
@@ -633,11 +636,11 @@ class HorizonOrchestrator:
                     if TwitterScraper.append_discussion_content(item, reply_lines):
                         expanded.append(item)
                         self.console.print(
-                            f"   💬 {len(reply_lines)} replies added to: {item.title[:60]}"
+                            f"   馃挰 {len(reply_lines)} replies added to: {item.title[:60]}"
                         )
                 except Exception as exc:
                     self.console.print(
-                        f"   [yellow]⚠️  Reply fetch failed for {item.id}: {exc}[/yellow]"
+                        f"   [yellow]鈿狅笍  Reply fetch failed for {item.id}: {exc}[/yellow]"
                     )
 
         if not expanded:
@@ -662,7 +665,7 @@ class HorizonOrchestrator:
         if not items:
             return
 
-        self.console.print("📚 Enriching with background knowledge...")
+        self.console.print("馃摎 Enriching with background knowledge...")
         ai_client = create_ai_client(self.config.ai)
         enricher = ContentEnricher(ai_client)
         await enricher.enrich_batch(items)
@@ -677,7 +680,7 @@ class HorizonOrchestrator:
         Returns:
             List[ContentItem]: Analyzed items
         """
-        self.console.print("🤖 Analyzing content with AI...")
+        self.console.print("馃 Analyzing content with AI...")
 
         ai_client = create_ai_client(self.config.ai)
         analyzer = ContentAnalyzer(ai_client)
@@ -702,7 +705,7 @@ class HorizonOrchestrator:
         Returns:
             str: Markdown summary
         """
-        self.console.print("📝 Generating daily summary...")
+        self.console.print("馃摑 Generating daily summary...")
 
         summarizer = DailySummarizer()
 
